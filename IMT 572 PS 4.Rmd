@@ -1,0 +1,240 @@
+---
+title: '4.18 Problem Set: Statistics'
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-01-25"
+---
+
+## R Markdown
+
+#1. Create three vectors of numbers. For each, print the vector, the mean, the median, the variance, and the standard deviation. 
+
+# A.Vector 1 should have the mean and median equal.
+
+# B. Vector 2 should have the mean greater than the median.
+
+# C. Vector 3 should have the mean less than the median.
+
+```{r}
+# Vector 1
+vec1 <- c(1, 2, 3, 4, 5)
+mean1 <- mean(vec1)
+median1 <- median(vec1)
+var1 <- var(vec1)
+sd1 <- sd(vec1)
+
+print("Vector 1:")
+print(vec1)
+print("Mean:")
+print(mean1)
+print("Median:")
+print(median1)
+print("Variance:")
+print(var1)
+print("Standard Deviation:")
+print(sd1)
+
+# Vector 2
+vec2 <- c(1, 2, 3, 4, 6)
+mean2 <- mean(vec2)
+median2 <- median(vec2)
+var2 <- var(vec2)
+sd2 <- sd(vec2)
+
+print("Vector 2:")
+print(vec2)
+print("Mean:")
+print(mean2)
+print("Median:")
+print(median2)
+print("Variance:")
+print(var2)
+print("Standard Deviation:")
+print(sd2)
+
+# Vector 3
+vec3 <- c(1, 2, 4, 4, 6)
+mean3 <- mean(vec3)
+median3 <- median(vec3)
+var3 <- var(vec3)
+sd3 <- sd(vec3)
+
+print("Vector 3:")
+print(vec3)
+print("Mean:")
+print(mean3)
+print("Median:")
+print(median3)
+print("Variance:")
+print(var3)
+print("Standard Deviation:")
+print(sd3)
+```
+
+#2.Use R to solve each of the following problems.
+
+# A. The head of quality control stops by a factory to inspect the next 20 widgets produced. Over the past six months, 98% of widgets have passed inspection. What is the probability that less than 10 widgets pass inspection?
+
+# B.The average test score in a large college statistics course with multiple sections is 85 and the standard deviation is five points. If you choose a student at random, what is the probability that their score is between 80 and 85?
+
+# C. Over the past three years at the farm you manage, the watermelons average about nine pounds each with a standard deviation of two pounds. What is    the probability that a watermelon randomly selected from your harvest will weigh more than 10 pounds?
+
+# D. You manage a help desk. 90% of your tickets are resolved with the first reply. If you randomly select 10 tickets for review, what is the probability that all 10 were resolved with the first reply?
+
+```{r}
+# Problem A
+test_size <- 20
+test_prob <- 0.98
+
+pbinom(10, size = test_size, prob = test_prob)
+
+# Problem B
+mean <- 85
+sd <- 5
+z <- (80-mean)/sd
+Probabilty <- pnorm(abs(z))
+print(Probabilty)
+
+# Problem C
+mean <- 9
+sd <- 2
+prob3 <- pnorm(10, mean = mean, sd = sd, lower.tail = FALSE)
+print(prob3)
+
+# Problem D
+test_size <- 10
+test_prob <- 0.90
+
+dbinom(10 , size = test_size , prob = test_prob)
+```
+
+# 3. From the MASS package, import the dataset “immer.” 
+# A. Read the documentation and describe the dataset in your own words.
+# B. Is this data tidy? If not, tidy it and print the tidy dataset. Save your tidy dataset in a variable and work with it through the rest of the problem set.
+# C. Use any tools that you like in R to answer the following questions.
+#What values are present in the location variable? How many rows are there for each value?
+#What values are present in the variety variable? How many rows are there for each value?
+#How many years are represented in the dataset? How many rows are there for each year?
+#What is the mean yield?
+#What is the first quartile, median, and third quartile for yield?
+#What are the minimum and maximum values for yield?
+#What are the variance and standard deviation for yield?
+#Create two boxplots for yield. 
+#The first boxplot should have bars that extend from the minimum to the maximum.
+#The second boxplot should have bars that extend from (Q1 - 1.5 x IQR) to (Q3 + 1.5 x IQR)
+
+
+
+```{r}
+library(tidyverse)
+library(MASS)
+data(immer)
+```
+#A
+#The "immer" dataset is a data set from a study on the effects of a fertilizer treatment on the yield of a barley variety called "Immer" grown in four different locations. The data consists of a randomized block design with three replicates per location. The treatment is a factor with two levels: control and nitro. The response variable is the yield of barley in bushels per acre. It includes four factors, location, replicate, nitro and block and a response variable yield.
+
+#B
+#This data is not in tidy format, as the location, replicate, nitro and block variables are spread across multiple columns. To make this data tidy, we can use the "gather" function from the tidyr package to gather these variables into a single column called "variable" and the corresponding values into a column called "value".
+
+#Tidying up the data
+```{r}
+#Renaming collums 
+names(immer)[3] <- 1931
+names(immer)[4] <- 1932
+
+# Load tidyverse package to use pivot
+library(tidyverse)
+
+# Pivot immer df from wide to longer and assign tidy df to newImmer
+newImmer <- pivot_longer(
+              data = immer,
+              cols = colnames(immer[3:4]),
+              names_to = "Year",
+              values_to = "Yield"
+            )
+
+print(newImmer)
+```
+
+#C 
+```{r}
+unique(newImmer)
+```
+# Location valuables: UF, W, M, C, GR, and D. Data set presents
+# 10 rows for these values.
+#Variety variables: M, S, V, T, and P. Data set presents 12 rows
+#for these values.
+```{r}
+# Statistical summary of the newImmer df 
+summary(newImmer)
+```
+#Mean yield - 101.09
+#First quartile for yield - 80.62
+#Median for yield - 97.50 
+#Third quartile for yield - 119.72
+#Minimum value for yield - 49.90
+#Maximum value for yield - 191.50 
+```{r}
+var(newImmer$Yield)
+sd(newImmer$Yield)
+```
+#Variance for yield - 758.18
+#Sd for yield - 27.53
+
+``` {r} 
+boxplot(newImmer$Yield,  
+        main = "Barley Yield",
+        horizontal  =  TRUE,  
+        range  =  0) 
+```
+#Boxplot #1
+```{r}
+boxplot(newImmer$Yield,  
+        main = "Barley Yield (Q1 - 1.5 x IQR) to (Q3 + 1.5 x IQR)",
+        horizontal  =  TRUE,  
+        range  =  1.5) 
+```
+## Boxplot #2
+
+#4 From the MASS package, import the dataset “Pima.tr.” 
+#Read the documentation and describe the data in your own words.
+#Is the data tidy? If not, tidy it.
+#Write a loop that calculates and prints the mean of each numeric variable.
+
+
+
+
+```{r}
+?Pima.tr
+
+pimadataset <- Pima.tr
+
+pimadataset <- as_tibble(pimadataset)
+(pimadataset)
+data(Pima.tr)
+unique(Pima.tr)
+names(Pima.tr)
+duplicated(Pima.tr)
+glimpse(Pima.tr)
+pimadataset[pimadataset$npreg == 1 & pimadataset$age == 22,]
+```
+#A The data consists of several medical predictor variables such as the number of pregnancies the patient has had, their BMI, insulin level, age and so on. The response variable is a binary variable indicating whether the patient has diabetes or not.
+
+#The Pima.tr data set is not in a tidy format as the columns are representing variables and the rows are representing observations.
+
+
+
+#Write a loop that calculates and prints the mean of each numeric variable
+
+```{r}
+for (i in c(2:5)) {
+  print(mean(pimadataset[[i]]))
+}
+```
+
+
+
+
+
+
